@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ resume.name }} &middot; {{ resume.title }}</title>
+  <meta name="author" content="{{ resume.name }}">
+  <meta name="description" content="{{ resume.title }}, {{ resume.affiliation }}. {{ resume.about[0][:160] }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A7%3C/text%3E%3C/svg%3E">
+  <meta property="og:title" content="{{ resume.name }}">
+  <meta property="og:description" content="{{ resume.title }}, {{ resume.affiliation }}">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body id="top">
+
+  {% set navitems = [
+      ("About", "#top"),
+      ("News", "#news"),
+      ("Publications", "#publications"),
+      ("Background", "#background"),
+      ("Awards", "#awards"),
+      ("Thesis", "#thesis"),
+      ("Contact", "#contact"),
+  ] %}
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <a class="brand" href="#top">{{ resume.name }}</a>
+      <div class="navlinks">
+        {% for label, href in navitems %}
+          {% set visible = {
+              "News": news|length > 0,
+              "Awards": resume.awards|length > 0,
+              "Thesis": resume.thesis is not none,
+              "Background": (resume.experience|default([]))|length > 0 or (resume.education|default([]))|length > 0
+          } %}
+          {% if visible.get(label, true) %}
+          <a href="{{ href }}">{{ label }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap">
+
+    <!-- ============================================================ HERO -->
+    <header class="hero about" id="about">
+      <div class="id">
+        <h1>{{ resume.name }}</h1>
+        <p class="role">{{ resume.title }} &middot; <span class="org">{{ resume.affiliation }}</span></p>
+        <div class="about">
+          {% for para in resume.about %}
+            <p>{{ para }}</p>
+          {% endfor %}
+        </div>
+        <div class="quicklinks">
+          {% for q in resume.quick_links %}
+            <a class="btn ghost" href="{{ q.url }}" {% if not q.url.startswith("http") %}rel="noopener"{% endif %} target="_blank">
+              <svg class="i" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>{{ q.label }}
+            </a>
+          {% else %}
+          {% endfor %}
+        </div>
+        <div class="socials" style="margin-top:16px">
+          {% for s in resume.socials %}
+            <a class="chip" href="{{ s.url }}" {% if not s.url.startswith("mailto") %}target="_blank" rel="noopener"{% endif %}>
+              <span class="dot"></span>{{ s.label }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="photo">
+        <img src="assets/{{ resume.photo }}" alt="Portrait of {{ resume.name }}" width="168" height="200">
+      </div>
+    </header>
+
+    <!-- ============================================================= NEWS -->
+    {% if news %}
+    <section id="news">
+      <h2>News <span class="tag">announcements</span></h2>
+      <ul class="news">
+        {% for item in news %}
+        <li>
+          <span class="date" title="{{ item.iso }}">{{ item.date_display }}</span>
+          <div class="body">
+            {% if item.title %}<div class="title">{{ item.title }}</div>{% endif %}
+            <div>{{ item.html | safe }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- ======================================================= PUBLICATIONS -->
+    <section id="publications">
+      <h2>Publications <span class="tag">{{ pub_count }} papers</span></h2>
+
+      <form class="toolbar" onsubmit="return false;">
+        <label class="count" for="pubFilter">Search by title, venue, or author</label>
+        <div class="search">
+          <input id="pubFilter" type="search" placeholder="e.g. Diffusion, Siggraph, Ceylan" autocomplete="off" aria-label="Filter publications">
+        </div>
+      </form>
+      <p class="count" id="pubCount" style="margin:4px 2px 6px">{{ pub_count }} of {{ pub_count }}</p>
+
+      {% if pubs %}
+        {% for group in pubs %}
+          <div class="pub-year">{{ group.year }}</div>
+          {% for e in group.entries %}
+            {% set ttarget = e.urls.project or e.urls.paper or "" %}
+            <article class="entry{% if e.preview %} has-img{% endif %}" data-key="{{ e.key }}">
+              {% if e.preview %}
+              <a class="thumb" {% if ttarget %}href="{{ ttarget }}" target="_blank" rel="noopener"{% endif %}>
+                <img src="{{ e.preview }}" alt="" width="120" height="160" loading="lazy">
+              </a>
+              {% endif %}
+              <div class="entry-body">
+                <div class="title">{{ e.title }}{% if e.note %}<span class="note-star">{{ e.note }}</span>{% endif %}</div>
+                <div class="authors">{% for a in e.authors %}{% if not loop.first %}, {% endif %}{% if a.me %}<em>{{ a.name }}</em>{% else %}{{ a.name }}{% endif %}{% endfor %}</div>
+                <div class="meta">{{ e.venue }}{% if not e.venue_has_year %}, {{ e.year }}{% endif %}{% if e.month %}, {{ e.month }}{% endif %}</div>
+                {% set links = [] %}
+                {% if e.urls.paper %}{% set _ = links.append(("Paper", e.urls.paper)) %}{% endif %}
+                {% if e.urls.project %}{% set _ = links.append(("Project", e.urls.project)) %}{% endif %}
+                {% if e.urls.code %}{% set _ = links.append(("Code", e.urls.code)) %}{% endif %}
+                {% if e.urls.video %}{% set _ = links.append(("Video", e.urls.video)) %}{% endif %}
+                {% if e.urls.slides %}{% set _ = links.append(("Slides", e.urls.slides)) %}{% endif %}
+                {% if e.urls.supplement %}{% set _ = links.append(("Supplement", e.urls.supplement)) %}{% endif %}
+                {% if e.doi and not e.urls.paper %}{% set _ = links.append(("DOI", e.doi)) %}{% endif %}
+                {% if links %}
+                <div class="badges">
+                  {% for label, href in links %}
+                  <a class="badge" href="{{ href }}" target="_blank" rel="noopener">
+                    <svg class="i" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>{{ label }}
+                  </a>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        <p class="empty">No publications yet. Add them to <code>data/publications.bib</code>.</p>
+      {% endif %}
+    </section>
+
+    <!-- ========================================================= BACKGROUND -->
+    {% if (resume.experience|default([]) or resume.education|default([])) %}
+    <section id="background">
+      <h2>Background</h2>
+
+      {% if resume.experience %}
+      <div class="list">
+        {% for j in resume.experience %}
+        <div class="row">
+          <span class="when">{{ j.start }} &ndash; {{ j.end|default('present')|capitalize }}</span>
+          <div class="what">
+            <div class="t">{{ j.role }}</div>
+            <div class="s">{{ j.org }}{% if j.location %}, {{ j.location }}{% endif %}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if resume.education %}
+      <div class="list" style="margin-top:18px">
+        {% for e in resume.education %}
+        <div class="row">
+          <span class="when">{{ e.year }}</span>
+          <div class="what">
+            <div class="t">{{ e.degree }}</div>
+            <div class="s">{{ e.school }}{% if e.location %}, {{ e.location }}{% endif %}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- ============================================================ AWARDS -->
+    {% if resume.awards %}
+    <section id="awards">
+      <h2>Awards <span class="tag">{{ resume.awards|length }}</span></h2>
+      <div class="awards">
+        {% for a in resume.awards %}
+        <div class="award">
+          <div class="year">{{ a.year }}</div>
+          <div class="name">{{ a.title }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ============================================================ THESIS -->
+    {% if resume.thesis %}
+    <section id="thesis">
+      <h2>Thesis</h2>
+      <div class="thesis{% if resume.thesis.preview %} has-img{% endif %}">
+        {% if resume.thesis.preview %}
+        <a class="thumb" href="{{ resume.thesis.url }}" target="_blank" rel="noopener">
+          <img src="{{ resume.thesis.preview }}" alt="" width="120" height="160" loading="lazy">
+        </a>
+        {% endif %}
+        <div class="entry-body">
+          <div class="t">{{ resume.thesis.title }}</div>
+          <div class="d">
+            <b>{{ resume.thesis.year }}</b> &middot; {{ resume.thesis.university }}
+            &middot; Advisor: {{ resume.thesis.advisor }}
+            {% if resume.thesis.note %}<br>{{ resume.thesis.note }}{% endif %}
+          </div>
+          <div class="actions">
+            <a class="btn" href="{{ resume.thesis.url }}" target="_blank" rel="noopener">
+              <svg class="i" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Download thesis
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- =========================================================== CONTACT -->
+    <section class="contact" id="contact">
+      <h2>Contact</h2>
+      <p class="lede">To reach out, use the channels below or write an email directly.</p>
+      <div class="socials">
+        <a class="btn" href="mailto:{{ resume.email }}">
+          <svg class="i" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg>{{ resume.email }}
+        </a>
+        {% for s in resume.socials %}
+          {% if not s.url.startswith("mailto") %}
+          <a class="chip" href="{{ s.url }}" target="_blank" rel="noopener"><span class="dot"></span>{{ s.label }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <span>{{ resume.name }} &middot; {{ resume.affiliation }}</span>
+      <span>Built from source files &middot; last updated {{ build_date }}</span>
+    </div>
+  </footer>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "_comment": "Edit this file to change who the site is about. Strings support a tiny amount of inline HTML (links). See README.md for details.",
+
+  "name": "Duygu Ceylan",
+  "title": "Principal Research Scientist",
+  "affiliation": "Adobe Research, London",
+  "photo": "profile.jpg",
+  "email": "duygu.ceylan@gmail.com",
+
+  "about": [
+    "Duygu Ceylan is a Principal Research Scientist at Adobe Research in London. Before joining Adobe in 2014, she obtained her PhD degree from EPFL, where she worked with Prof. Mark Pauly. She graduated from the Computer Engineering Department of METU in 2007, and received her Master's degree in Computer Science from Bilkent University in 2009, where she also worked as a software engineer at Aselsan Inc.",
+    "Her research interests include using machine learning techniques to infer and analyze 3D information from images and videos, and to use that information to generate and edit 2D and 3D content. She works at the intersection of computer vision and computer graphics, looking for new methods to bridge the gap between 2D and 3D.",
+    "If you would like to do a research internship with her, or to join the group at Adobe Research, please send an email with your resume and your research interests."
+  ],
+
+  "quick_links": [
+    { "label": "Full CV", "url": "https://www.duygu-ceylan.com/duygu-ceylan/Home_files/duygu_CV.pdf" }
+  ],
+
+  "socials": [
+    { "label": "Email",            "url": "mailto:duygu.ceylan@gmail.com" },
+    { "label": "Google Scholar",   "url": "https://scholar.google.com/citations?user=56Kj2QoAAAAJ" },
+    { "label": "ORCID",            "url": "https://orcid.org/0000-0002-2307-9052" },
+    { "label": "Adobe Research",   "url": "https://research.adobe.com/person/duygu-ceylan/" },
+    { "label": "ResearchGate",     "url": "https://www.researchgate.net/profile/Duygu-Ceylan" },
+    { "label": "GitHub",           "url": "https://github.com/duyguceylan" }
+  ],
+
+  "experience": [
+    {
+      "role": "Principal Research Scientist",
+      "org": "Adobe Research",
+      "location": "London, United Kingdom",
+      "start": "2014",
+      "end": "present"
+    }
+  ],
+
+  "education": [
+    {
+      "degree": "M.Sc., Computer Science",
+      "school": "Bilkent University",
+      "location": "Türkiye",
+      "year": "2009"
+    },
+    {
+      "degree": "B.Sc., Computer Engineering",
+      "school": "Middle East Technical University (METU)",
+      "location": "Türkiye",
+      "year": "2007"
+    }
+  ],
+
+  "awards": [
+    { "year": 2020, "title": "Eurographics Young Researcher Award" },
+    { "year": 2015, "title": "Eurographics PhD Award" }
+  ],
+
+  "thesis": {
+    "title": "Computational Shape Understanding for 3D Reconstruction and Modeling",
+    "year": 2014,
+    "university": "EPFL",
+    "advisor": "Prof. Mark Pauly",
+    "note": "Eurographics Best PhD Thesis Award 2015",
+    "url": "https://www.duygu-ceylan.com/duygu-ceylan/research_files/thesis_DuyguCeylan.pdf",
+    "preview": "assets/thesis.webp"
+  }
+}
